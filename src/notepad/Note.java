@@ -1,28 +1,27 @@
 package notepad;
 
 public class Note extends Record {
-    private String note;
+    private String text;
 
-    public String getNote() {
-        return note;
+    public String getText() {
+        return text;
     }
 
-    public void setNote(String note) {
-        this.note = note;
-    }
+    public void setText(String text) {
 
-    private String toString;
+        this.text = text;
+    }
 
     @Override
     public String toString() {
         return "Note{" +
-                "id=" + getId() +
-                "note='" + note + '\'' +
+                "id=" + getId() + "," +
+                "text='" + text + '\'' +
                 '}';
     }
 
     @Override
     public boolean hasSubstring(String str) {
-        return note.contains(str);
+        return text.contains(str);
     }
 }

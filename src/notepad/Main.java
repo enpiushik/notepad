@@ -1,6 +1,7 @@
 package notepad;
 
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,7 +26,7 @@ public class Main {
                     printList();
                     break;
                 case "delete":
-                    delete();
+                    removeByID();
                     break;
                 case "find":
                     find();
@@ -53,37 +54,60 @@ public class Main {
 
     private static void createNote() {
         System.out.println("Enter note:");
-        String note = askString();
-        Note p = new Note();
-        p.setNote(note);
-
-        recordlist.add(p);
-
-        System.out.println(p);
+        String txt = askString();
+        Note note = new Note();
+        note.setText(txt);
+        recordlist.add(note);
+        System.out.println(note);
     }
 
     private static void help() {
-        System.out.println("createPerson - createPerson new person");
+        System.out.println("createPerson; cp - create new person");
+        System.out.println("createNote; cn - create new a note");
         System.out.println("list - show all persons");
-        System.out.println("delete - delete person");
+        System.out.println("delete - delete person by ID");
+        System.out.println("find - person or note by ID");
         System.out.println("exit - close program");
     }
 
-    private static void delete() {
+    private static void removeByID() {
         System.out.println("Enter person ID to remove:");
-        int ID = scanner.nextInt();
-        int list_index = 0;
-
-        for (Record p : recordlist) {
-           if (p.getId() == ID) {
-               list_index = recordlist.indexOf(p);
-               break;
-           }
+        int id = askInt();
+        for (int i = 0; i < recordlist.size(); i++) {
+            Record p = recordlist.get(i);
+            if (id == p.getId()) {
+                recordlist.remove(i);
+                break;
+            }
         }
-        if (list_index == 0)
-            System.out.println("ID not found!");
-        else
-            recordlist.remove(list_index);
+    }
+
+//    private static void delete() {
+//        System.out.println("Enter person ID to remove:");
+//        int ID = scanner.nextInt();
+//        int list_index = 0;
+//
+//        for (Record p : recordlist) {
+//           if (p.getId() == ID) {
+//               list_index = recordlist.indexOf(p);
+//               break;
+//           }
+//        }
+//        if (list_index == 0)
+//            System.out.println("ID not found!");
+//        else
+//            recordlist.remove(list_index);
+//    }
+
+    private static int askInt() {
+        while (true) {
+            try {
+                return scanner.nextInt();
+            } catch (InputMismatchException e) {
+                scanner.next(); // skip wrong input
+                System.out.println("It isn't a number");
+            }
+        }
     }
 
     private static void printList() {
@@ -100,14 +124,15 @@ public class Main {
             String surname = askString();
 
             System.out.println("Enter your phone:");
-            String phone = "";
-            while (phone.length() == 0) {
-                phone = scanner.next();
-                if (phone.matches("[0-9]+") == false || phone.length() < 5) {
-                    System.out.println("Wrong phone number!");
-                    phone = "";
-                }
-            }
+            String phone = askPhone();
+//            String phone = "";
+//            while (phone.length() == 0) {
+//                phone = scanner.next();
+//                if (phone.matches("[0-9]+") == false || phone.length() < 5) {
+//                    System.out.println("Wrong phone number!");
+//                    phone = "";
+//                }
+//            }
 
             System.out.println("Enter your e-mail:");
             String email = askString();
@@ -141,4 +166,23 @@ public class Main {
             return word;
         }
     }
+        private static String askPhone() {
+            while (true) {
+                String phone = askString();
+                // checking if there any characters expect digits, spaces, pluses and dashes
+                if (phone.chars().anyMatch(c -> !Character.isDigit(c) && c != ' ' && c != '+' && c != '-')) {
+                    System.out.println("Only digits, spaces, plus and dash are allowed!");
+                    continue;
+                }
+
+                // checking how many digits in the entered number (excluding spaces and other non-digits)
+                if (phone.chars().filter(Character::isDigit).count() < 5) {
+                    System.out.println("At least 5 digits in phone number");
+                    continue;
+                }
+
+                // validation passed
+                return phone;
+            }
+        }
 }
