@@ -11,6 +11,8 @@ public abstract class Record {
 
     public abstract boolean hasSubstring (String str);
 
+    public abstract void askQuestions();
+
     public int getId() { return id; }
     public void setId(int id) {
         this.id = id;

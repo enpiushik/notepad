@@ -1,13 +1,22 @@
 package notepad;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
+    public final static String DATE_FORMAT = "dd.MM.yyyy";
+    public final static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT);
+
+    public final static String TIME_FORMAT = "HH:mm";
+    public final static DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_FORMAT);
+
     static Scanner scanner = new Scanner(System.in);
-    static List <Record> recordlist = new ArrayList<>();
+    static List<Record> recordlist = new ArrayList<>();
 
     public static void main(String[] args) {
         while (true) {
@@ -21,6 +30,10 @@ public class Main {
                 case "createNote":
                 case "cn":
                     createNote();
+                    break;
+                case "createReminder":
+                case "cr":
+                    createReminder();
                     break;
                 case "list":
                     printList();
@@ -42,10 +55,15 @@ public class Main {
         }
     }
 
+    private static void createReminder() {
+        var reminder = new Reminder();
+        addRecord(reminder);
+    }
+
     private static void find() {
         System.out.println("Find what?");
         String str = askString();
-        for (Record r: recordlist) {
+        for (Record r : recordlist) {
             if (r.hasSubstring(str)) {
                 System.out.println(r);
             }
@@ -53,17 +71,14 @@ public class Main {
     }
 
     private static void createNote() {
-        System.out.println("Enter note:");
-        String txt = askString();
         Note note = new Note();
-        note.setText(txt);
-        recordlist.add(note);
-        System.out.println(note);
+        addRecord(note);
     }
 
     private static void help() {
         System.out.println("createPerson; cp - create new person");
         System.out.println("createNote; cn - create new a note");
+        System.out.println("createReminder; cr - create new reminder");
         System.out.println("list - show all persons");
         System.out.println("delete - delete person by ID");
         System.out.println("find - person or note by ID");
@@ -82,23 +97,6 @@ public class Main {
         }
     }
 
-//    private static void delete() {
-//        System.out.println("Enter person ID to remove:");
-//        int ID = scanner.nextInt();
-//        int list_index = 0;
-//
-//        for (Record p : recordlist) {
-//           if (p.getId() == ID) {
-//               list_index = recordlist.indexOf(p);
-//               break;
-//           }
-//        }
-//        if (list_index == 0)
-//            System.out.println("ID not found!");
-//        else
-//            recordlist.remove(list_index);
-//    }
-
     private static int askInt() {
         while (true) {
             try {
@@ -111,44 +109,24 @@ public class Main {
     }
 
     private static void printList() {
-        for (Record p : recordlist){
+        for (Record p : recordlist) {
             System.out.println(p);
         }
     }
 
     private static void createPerson() {
-            System.out.println("Enter your name:");
-            String name = askString();
+        Person p = new Person();
+        addRecord(p);
+    }
 
-            System.out.println("Enter your surname:");
-            String surname = askString();
-
-            System.out.println("Enter your phone:");
-            String phone = askPhone();
-//            String phone = "";
-//            while (phone.length() == 0) {
-//                phone = scanner.next();
-//                if (phone.matches("[0-9]+") == false || phone.length() < 5) {
-//                    System.out.println("Wrong phone number!");
-//                    phone = "";
-//                }
-//            }
-
-            System.out.println("Enter your e-mail:");
-            String email = askString();
-
-            Person p = new Person();
-            p.setName(name);
-            p.setSurname(surname);
-            p.setPhone(phone);
-            p.setEmail(email);
-
-            recordlist.add(p);
-
+    private static void addRecord(Record p) {
+        p.askQuestions();
+        recordlist.add(p);
+        System.out.println("You have created this record!");
         System.out.println(p);
     }
 
-    private static String askString() {
+    public static String askString() {
         var result = new ArrayList<String>();
         var word = scanner.next();
         if (word.startsWith("\"")) {
@@ -157,7 +135,7 @@ public class Main {
                 result.add(word);
                 if (word.endsWith("\"")) {
                     String str = String.join(" ", result);
-                    return str.substring(1, str.length()-1);
+                    return str.substring(1, str.length() - 1);
                 }
                 word = scanner.next();
             } while (true);
@@ -166,23 +144,35 @@ public class Main {
             return word;
         }
     }
-        private static String askPhone() {
-            while (true) {
-                String phone = askString();
-                // checking if there any characters expect digits, spaces, pluses and dashes
-                if (phone.chars().anyMatch(c -> !Character.isDigit(c) && c != ' ' && c != '+' && c != '-')) {
-                    System.out.println("Only digits, spaces, plus and dash are allowed!");
-                    continue;
-                }
 
-                // checking how many digits in the entered number (excluding spaces and other non-digits)
-                if (phone.chars().filter(Character::isDigit).count() < 5) {
-                    System.out.println("At least 5 digits in phone number");
-                    continue;
-                }
-
-                // validation passed
-                return phone;
+    public static String askPhone() {
+        while (true) {
+            String phone = askString();
+            // checking if there any characters expect digits, spaces, pluses and dashes
+            if (phone.chars().anyMatch(c -> !Character.isDigit(c) && c != ' ' && c != '+' && c != '-')) {
+                System.out.println("Only digits, spaces, plus and dash are allowed!");
+                continue;
             }
+
+            // checking how many digits in the entered number (excluding spaces and other non-digits)
+            if (phone.chars().filter(Character::isDigit).count() < 5) {
+                System.out.println("At least 5 digits in phone number");
+                continue;
+            }
+
+            // validation passed
+            return phone;
         }
+    }
+
+    public static LocalDate askDate () {
+        String d = askString();
+        LocalDate date = LocalDate.parse(d, DATE_FORMATTER);
+        return date;
+    }
+    public static LocalTime askTime () {
+        String t = askString();
+        LocalTime time = LocalTime.parse(t, TIME_FORMATTER);
+        return time;
+    }
 }
