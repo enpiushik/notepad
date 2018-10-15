@@ -166,13 +166,31 @@ public class Main {
     }
 
     public static LocalDate askDate () {
-        String d = askString();
-        LocalDate date = LocalDate.parse(d, DATE_FORMATTER);
-        return date;
+        String d;
+        LocalDate date;
+
+        while (true) {
+            d = askString();
+            try {
+                date = LocalDate.parse(d, DATE_FORMATTER);
+                return date;
+            } catch (Exception e) {
+                System.out.println("It isn't a date. Try again!");
+            }
+        }
     }
     public static LocalTime askTime () {
-        String t = askString();
-        LocalTime time = LocalTime.parse(t, TIME_FORMATTER);
-        return time;
+        String t;
+        LocalTime time;
+
+        while (true) {
+            t = askString();
+            try {
+                time = LocalTime.parse(t, TIME_FORMATTER);
+                return time;
+            } catch (Exception e) {
+                System.out.println("It isn't a time. Try again!");
+            }
+        }
     }
 }
