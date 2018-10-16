@@ -42,6 +42,9 @@ public class Main {
                 case "show":
                     showByID();
                     break;
+                case "expired":
+                    showExpired();
+                    break;
                 case "delete":
                     removeByID();
                     break;
@@ -55,6 +58,17 @@ public class Main {
                     return;
                 default:
                     System.out.println("It is not a command!");
+            }
+        }
+    }
+
+    private static void showExpired() {
+        for (Record r : recordlist.values()) {
+            if (r instanceof Expirable) {
+                Expirable e = (Expirable) r;
+                if (e.isExpired()) {
+                    System.out.println(r);
+                }
             }
         }
     }

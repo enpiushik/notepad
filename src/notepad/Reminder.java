@@ -1,9 +1,10 @@
 package notepad;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public class Reminder extends Alarm {
+public class Reminder extends Alarm implements Expirable {
     private LocalDate date;
 
 
@@ -26,6 +27,14 @@ public class Reminder extends Alarm {
 
     public void setDate(LocalDate date) {
         this.date = date;
+    }
+
+    @Override
+    public boolean isExpired() {
+        LocalTime time = getTime();
+        LocalDateTime dt = LocalDateTime.of(date, time);
+        LocalDateTime now = LocalDateTime.now();
+        return now.isAfter(dt);
     }
 
     @Override

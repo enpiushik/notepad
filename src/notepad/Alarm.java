@@ -3,7 +3,7 @@ package notepad;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class Alarm extends Note {
+public class Alarm extends Note implements Expirable {
     private LocalTime time;
 
     public LocalTime getTime() {
@@ -35,5 +35,12 @@ public class Alarm extends Note {
                 "text='" + getText() + '\'' +
                 ", time='" + time.format(Main.TIME_FORMATTER) + '\'' +
                 '}';
+    }
+
+    @Override
+    public boolean isExpired() {
+        LocalTime now = LocalTime.now();
+//      return time.isBefore(now);
+        return now.isAfter(time);
     }
 }
