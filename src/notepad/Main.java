@@ -3,10 +3,7 @@ package notepad;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     public final static String DATE_FORMAT = "dd.MM.yyyy";
@@ -16,7 +13,7 @@ public class Main {
     public final static DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_FORMAT);
 
     static Scanner scanner = new Scanner(System.in);
-    static List<Record> recordlist = new ArrayList<>();
+    static Map<Integer, Record> recordlist = new LinkedHashMap<>();
 
     public static void main(String[] args) {
         while (true) {
@@ -35,8 +32,15 @@ public class Main {
                 case "cr":
                     createReminder();
                     break;
+                case "createAlarm":
+                case "ca":
+                    createAlarm();
+                    break;
                 case "list":
                     printList();
+                    break;
+                case "show":
+                    showByID();
                     break;
                 case "delete":
                     removeByID();
@@ -55,6 +59,20 @@ public class Main {
         }
     }
 
+    private static void createAlarm() {
+        var alarm = new Alarm();
+        addRecord(alarm);
+    }
+
+    private static void showByID() {
+        System.out.println("Enter person ID to show:");
+        int id = askInt();
+        Record record = recordlist.get(id);
+        System.out.println(record);
+//        System.out.println(recordlist.get (id));
+//        мой вариант
+    }
+
     private static void createReminder() {
         var reminder = new Reminder();
         addRecord(reminder);
@@ -63,7 +81,7 @@ public class Main {
     private static void find() {
         System.out.println("Find what?");
         String str = askString();
-        for (Record r : recordlist) {
+        for (Record r : recordlist.values()) {
             if (r.hasSubstring(str)) {
                 System.out.println(r);
             }
@@ -80,21 +98,16 @@ public class Main {
         System.out.println("createNote; cn - create new a note");
         System.out.println("createReminder; cr - create new reminder");
         System.out.println("list - show all persons");
+        System.out.println("show - show person by ID");
         System.out.println("delete - delete person by ID");
-        System.out.println("find - person or note by ID");
+        System.out.println("find - find person or note by smt");
         System.out.println("exit - close program");
     }
 
     private static void removeByID() {
         System.out.println("Enter person ID to remove:");
         int id = askInt();
-        for (int i = 0; i < recordlist.size(); i++) {
-            Record p = recordlist.get(i);
-            if (id == p.getId()) {
-                recordlist.remove(i);
-                break;
-            }
-        }
+        recordlist.remove(id);
     }
 
     private static int askInt() {
@@ -109,7 +122,7 @@ public class Main {
     }
 
     private static void printList() {
-        for (Record p : recordlist) {
+        for (Record p : recordlist.values()) {
             System.out.println(p);
         }
     }
@@ -121,7 +134,7 @@ public class Main {
 
     private static void addRecord(Record p) {
         p.askQuestions();
-        recordlist.add(p);
+        recordlist.put(p.getId(), p);
         System.out.println("You have created this record!");
         System.out.println(p);
     }
